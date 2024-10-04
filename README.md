@@ -42,8 +42,9 @@ Here are the questions without the column names:
 
 
 
-7. **Income Distribution by Marital Status**: 
+6. **Income Distribution by Marital Status**: 
    - How is income distributed across different marital statuses?
+
 
 ### **Product-Specific**
 1. **Top Product Preferences**: 
