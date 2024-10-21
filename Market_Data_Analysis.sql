@@ -48,7 +48,7 @@ UPDATE mkt_data
 SET Total_Spending = Total_Spending * 2;
 
 
--- -------------------------------------Generic Questions------------------------------------- --
+-- ------------------------------------- Questions------------------------------------- --
 
 -- 1. Which customers have spent the most across all product categories?
 
@@ -71,7 +71,8 @@ SELECT
 FROM 
     mkt_data
 GROUP BY 
-    education_level;
+    education_level
+ORDER BY Avg_income;
 
 -- 3. What percentage of customers accepted at least one campaign offer?
 
@@ -92,15 +93,11 @@ SELECT
 END AS Marital_Status,
 AVG(Total_Spending) AS Avg_Spending
 FROM mkt_data
-GROUP BY Marital_Status;
+GROUP BY Marital_Status
+ORDER BY AVG(Total_Spending);
 
--- 5. What is the average age of customers who have accepted at least one campaign offer?
 
-SELECT AVG(Age) AS Avg_age
-FROM mkt_data
-WHERE Accptd_CampOverall >= 1;
-
--- 6. How is income distributed across different marital statuses?
+-- 5. How is income distributed across different marital statuses?
 
 SELECT 
   CASE 
@@ -112,137 +109,40 @@ SELECT
 END AS Marital_Status,
 AVG(Income) AS Avg_income
 FROM mkt_data
-GROUP BY Marital_Status;
+GROUP BY Marital_Status
+ORDER BY AVG(Income);
 
--- -------------------------------------Product-Specific Questions------------------------------------- --
-
--- 1. Which product categories are most popular based on total spending?
-
-
-SELECT
-SUM(Wine_Spending) AS 'Wine Total', 
-SUM(Fruits_Spending) AS 'Fruits Total', 
-SUM(Meat_Spending) AS 'Meat Total', 
-SUM(Fish_Spending) AS 'Fish Total',
-SUM(Sweet_Spending) AS 'Sweet Total',
-SUM(Gold_Spending) AS 'Gold Total',
-SUM(Regular_Prod_Spending) AS 'Regular Products Total'
-FROM mkt_data
-;
- 
- 
- #OR
-
+-- 6. Income vs spending
 
 SELECT 
-    'Wine' AS 'Product Category', SUM(Wine_Spending) AS Total
+  CASE 
+    WHEN marital_Divorced = 1 THEN 'Divorced'
+    WHEN marital_Married = 1 THEN 'Married'
+    WHEN marital_Single = 1 THEN 'Single'
+    WHEN marital_Together = 1 THEN 'Together'
+    WHEN marital_Widow = 1 THEN 'Widow'
+END AS Marital_Status,
+CONCAT(ROUND(AVG(Income)/1000, 2),' k') AS Avg_income, 
+CONCAT(ROUND(AVG(Total_Spending)/1000,2),' k') AS Avg_Spending
 FROM mkt_data
-UNION ALL
-SELECT 
-    'Fruits' AS 'Product Category', SUM(Fruits_Spending) AS Total
+GROUP BY Marital_Status
+ORDER BY AVG(Income);
+
+
+-- 7. What is the average age of customers who have accepted at least one campaign offer?
+
+SELECT AVG(Age) AS Avg_age
 FROM mkt_data
-UNION ALL
-SELECT 
-    'Meat' AS 'Product Category', SUM(Meat_Spending) AS Total
-FROM mkt_data
-UNION ALL
-SELECT 
-    'Fish' AS 'Product Category', SUM(Fish_Spending) AS Total
-FROM mkt_data
-UNION ALL
-SELECT 
-    'Sweets' AS 'Product Category', SUM(Sweet_Spending) AS Total
-FROM mkt_data
-UNION ALL
-SELECT 
-    'Gold' AS 'Product Category', SUM(Gold_Spending) AS Total
-FROM mkt_data
-UNION ALL
-SELECT 
-    'Regular Products' AS 'Product Category', SUM(Regular_Prod_Spending) AS Total
-FROM mkt_data
-ORDER BY Total DESC;
+WHERE Accptd_CampOverall >= 1;
 
 
--- 2. How does having kids or teenagers affect the total amount spent by customers?
+-- 8. What is the age demographic of our customers?
 
-SELECT 
-    CASE 
-        WHEN Kidhome >= 1 THEN 'Kids'
-        ELSE 'No Kids'
-    END AS Kid_Status,
-    CASE 
-        WHEN Teenhome >= 1 THEN 'Teenagers'
-        ELSE 'No Teenagers'
-    END AS Teen_Status,
-    SUM(Total_Spending) AS Total_Spending
-FROM 
-    mkt_data
-GROUP BY 
-    Kid_Status, Teen_Status;
+SELECT MAX(Age) FROM mkt_data; -- 80
+SELECT MIN(Age) FROM mkt_data; -- 24
+SELECT AVG(Age) FROM mkt_data; -- 51
 
-#OR
-
-SELECT 
-    IF(Kidhome >= 1, 'Kids', 'No Kids') AS Kid_Status,
-    IF(Teenhome >= 1, 'Teenagers', 'No Teenagers') AS Teen_Status,
-    SUM(Total_Spending) AS Total_Spending
-FROM 
-    mkt_data
-GROUP BY 
-    Kid_Status, Teen_Status;
-
-
--- 3. Do higher-income customers use discounts more or less frequently?
-
-# SELECT AVG(Discount_Purchases) FROM mkt_data;  Avg discount used is 2.3184
-
-SELECT Discount_Purchases, Income FROM mkt_data
-ORDER BY Income DESC;
-
-
-#SELECT Discount_Purchases, Income FROM mkt_data ORDER BY Income ; Lowest income use more discounts
-
-
--- -------------------------------------Customer Behaviour Questions------------------------------------- --
-
-
--- 1. Who are the customers with the most recent purchases?
-
-SELECT Customer_ID, Days_Since_Purchase FROM mkt_data
-ORDER BY Days_Since_Purchase;
-
--- 2. Which customers have visited the website the most in the last month?
-
-SELECT Customer_ID, Last_Month_Web_Visits AS 'Amt of times customer visited website' FROM mkt_data
-ORDER BY Last_Month_Web_Visits DESC;
-
-
--- 3. Which method of purchase (catalog or web or store) is more popular across all customers?
-
-
-SELECT 
-'Catalogue' AS `Method of Purchase`, SUM(Catalog_Purchases) AS Total
-FROM mkt_data
-UNION ALL
-SELECT 
-'Website' AS `Method of Purchase`, SUM(Web_Purchases) AS Total
-FROM mkt_data
-UNION ALL
-SELECT
-'Store' AS `Method of Purchase`, SUM(InStore_Purchases) AS Total
-FROM mkt_data
-ORDER BY Total DESC;
-
-# Use ` or " for column aliases
-
--- 4. How does the success of marketing campaigns vary by age group?
-
-# SELECT MAX(Age) FROM mkt_data - 80
-# SELECT MIN(Age) FROM mkt_data - 24
-# SELECT AVG(Age) FROM mkt_data - 51
-
-ALTER TABLE mkt_data
+/* ALTER TABLE mkt_data
 ADD Age_Group VARCHAR(20) AFTER Age;
 
 UPDATE mkt_data
@@ -254,20 +154,169 @@ SET Age_Group =
     WHEN Age BETWEEN 66 AND 80 THEN 'Senior'
     ELSE 'Unknown'
   END;
+*/
+
+SELECT 
+Age_Group, COUNT(Age_group) As Count, 
+CONCAT(ROUND((COUNT(Age_Group)/ (SELECT COUNT(*) FROM mkt_data))*100, 2),'%')
+AS Percentage 
+FROM mkt_data
+GROUP BY Age_Group
+ORDER BY ((COUNT(Age_Group)/ (SELECT COUNT(*) FROM mkt_data))*100) DESC;
+ 
+
+
+
+
+
+-- 9. Which product categories are most popular based on total spending?
+
+
+SELECT
+SUM(Wine_Spending) AS 'Wine Total', 
+SUM(Fruits_Spending) AS 'Fruits Total', 
+SUM(Meat_Spending) AS 'Meat Total', 
+SUM(Fish_Spending) AS 'Fish Total',
+SUM(Sweet_Spending) AS 'Sweet Total',
+SUM(Gold_Spending) AS 'Gold Total',
+SUM(Regular_Prod_Spending) AS 'Regular Products Total'
+FROM mkt_data;
+ 
+ 
+ -- OR
+
+
+SELECT 
+    'Wine' AS 'Product Category', SUM(Wine_Spending) AS Total FROM mkt_data
+UNION ALL
+SELECT 
+    'Fruits' AS 'Product Category', SUM(Fruits_Spending) AS Total FROM mkt_data
+UNION ALL
+SELECT 
+    'Meat' AS 'Product Category', SUM(Meat_Spending) AS Total FROM mkt_data
+UNION ALL
+SELECT 
+    'Fish' AS 'Product Category', SUM(Fish_Spending) AS Total FROM mkt_data
+UNION ALL
+SELECT 
+    'Sweets' AS 'Product Category', SUM(Sweet_Spending) AS Total FROM mkt_data
+UNION ALL
+SELECT 
+    'Gold' AS 'Product Category', SUM(Gold_Spending) AS Total FROM mkt_data
+UNION ALL
+SELECT 
+    'Regular Products' AS 'Product Category', SUM(Regular_Prod_Spending) AS Total FROM mkt_data
+ORDER BY Total DESC;
+
+
+-- 10. How does having kids or teenagers affect the total amount spent by customers?
+
+SELECT 
+    CASE 
+        WHEN Kidhome >= 1 THEN 'Kids'
+        ELSE 'No Kids'
+    END AS Kid_Status,
+    CASE 
+        WHEN Teenhome >= 1 THEN 'Teenagers'
+        ELSE 'No Teenagers'
+    END AS Teen_Status,
+    SUM(Total_Spending) AS TotalSpending
+FROM mkt_data
+GROUP BY Kid_Status, Teen_Status
+ORDER BY SUM(Total_Spending);
+
+-- OR
+
+SELECT 
+    IF(Kidhome >= 1, 'Kids', 'No Kids') AS Kid_Status,
+    IF(Teenhome >= 1, 'Teenagers', 'No Teenagers') AS Teen_Status,
+    SUM(Total_Spending) AS TotalSpending
+FROM mkt_data
+GROUP BY Kid_Status, Teen_Status
+ORDER BY SUM(Total_Spending);
+
+
+-- 11. Do higher-income customers use discounts more or less frequently?
+
+
+-- Define low, average and high income customers by dividing income in 3 segments using NTILE
+
+
+
+WITH income_ranks AS (
+    SELECT 
+      Income,
+        NTILE(3) OVER (ORDER BY Income) AS rank_group, Discount_Purchases
+    FROM mkt_data
+)
+SELECT 
+    'High Income' AS Income_Rank, SUM(Discount_Purchases) AS Total_Discount_Purchases
+FROM income_ranks
+WHERE rank_group = 3  
+UNION ALL 
+SELECT 
+    'Avg Income' AS Income_Rank, SUM(Discount_Purchases) AS Total_Discount_Purchases
+FROM income_ranks
+WHERE rank_group = 2  
+UNION ALL 
+SELECT 
+    'Low Income' AS Income_Rank, SUM(Discount_Purchases) AS Total_Discount_Purchases
+FROM income_ranks
+WHERE rank_group = 1;
+
+
+
+-- 12. Who are the customers with the most recent purchases?
+
+SELECT Customer_ID, Days_Since_Purchase FROM mkt_data
+ORDER BY Days_Since_Purchase;
+
+-- 13. Which customers have visited the website the most in the last month?
+
+SELECT Customer_ID, 
+ Last_Month_Web_Visits AS '# of times customer visited website' FROM mkt_data
+ORDER BY Last_Month_Web_Visits DESC;
+
+
+-- 14. Which method of purchase (catalog or web or store) is more popular across all customers?
+
+
+SELECT 
+'Catalogue' AS `Method of Purchase`, SUM(Catalog_Purchases) AS Total, Age_Group
+FROM mkt_data
+GROUP BY Age_Group
+UNION ALL
+SELECT 
+'Website' AS `Method of Purchase`, SUM(Web_Purchases) AS Total, Age_Group
+FROM mkt_data
+GROUP BY Age_Group
+UNION ALL
+SELECT
+'Store' AS `Method of Purchase`, SUM(InStore_Purchases) AS Total, Age_Group
+FROM mkt_data
+GROUP BY Age_Group
+ORDER BY Total DESC;
+
+
+-- 15. How does the success of marketing campaigns vary by age group?
 
 
 SELECT Age_Group, 
 COUNT(CASE WHEN Accptd_CampOverall >= 1 THEN 1 END) AS Accepted_Campaign,
 COUNT(CASE WHEN Accptd_CampOverall = 0 THEN 1 END) AS Declined_Campaign,
-CONCAT(((COUNT(CASE WHEN Accptd_CampOverall >= 1 THEN 1 END)/COUNT(Accptd_CampOverall))*100),'%') AS Percentage_Acceptance
+CONCAT(((COUNT(CASE WHEN Accptd_CampOverall >= 1 THEN 1 END)/COUNT(Accptd_CampOverall))*100),'%') 
+AS Percentage_Acceptance
 FROM mkt_data
 GROUP BY Age_Group
-ORDER BY Percentage_Acceptance DESC;
+ORDER BY ((COUNT(CASE WHEN Accptd_CampOverall >= 1 THEN 1 END)/COUNT(Accptd_CampOverall))*100) DESC;
 
 
--- 5. What is the proportion of customers who have made complaints in the last 2 years?
 
-SELECT CONCAT(((COUNT(CASE WHEN Complain =1 THEN 1 END)/COUNT(Complain))*100),'%') AS Percentage_of_Complains
+-- 16. What is the proportion of customers who have made complaints in the last 2 years?
+
+SELECT 
+CONCAT(((COUNT(CASE WHEN Complain =1 THEN 1 END)/COUNT(Complain))*100),'%') 
+AS Percentage_of_Complains
 FROM mkt_data;
 
 
