@@ -86,7 +86,7 @@ List of questions
 Here are the questions without the column names:
 
 
-### **Generic Questions**
+### **Questions**
 1. **Total Spendings by Customer**: 
    - Which customers have spent the most across all product categories?
    
@@ -98,39 +98,43 @@ Here are the questions without the column names:
 
 4. **Spending Based on Marital Status**: 
    - How does spending vary by marital status?
-
-5. **Average Age of Campaign Participants**: 
-   - What is the average age of customers who have accepted at least one campaign offer?
-
-
-
-6. **Income Distribution by Marital Status**: 
+  
+5. **Income Distribution by Marital Status**: 
    - How is income distributed across different marital statuses?
 
+6. **Income vs Spending**: 
+   - How does income and spending correlate based on marrital status?
 
-### **Product-Specific**
-1. **Top Product Preferences**: 
+
+7. **Average Age of Campaign Participants**: 
+   - What is the average age of customers who have accepted at least one campaign offer?
+
+8. **Age Group**: 
+   - What is the proportion of customers in each age group?
+  
+     
+9. **Top Product Preferences**: 
    - Which product categories are most popular based on total spending?
 
-2. **Teen and Kid Influence on Spending**: 
+10. **Teen and Kid Influence on Spending**: 
    - How does having kids or teenagers affect the total amount spent by customers?
 
-3. **Discount Usage vs. Income**: 
+11. **Discount Usage vs. Income**: 
    - Do higher-income customers use discounts more or less frequently?
 
-### **Customer Behavior**
-1. **Recent Customers**: 
+
+12. **Recent Customers**: 
    - Who are the customers with the most recent purchases?
 
-2. **Customer Engagement on Website**: 
+13. **Customer Engagement on Website**: 
    - Which customers have visited the website the most in the last month?
 
-3. **Catalog vs. Web Purchases**: 
-   - Which method of purchase (catalog or web) is more popular across all customers?
+14. **Method of Purchases**: 
+   - Which method of purchase (catalog or web or store) is more popular across all customers/different age groups?
 
-4. **Campaign Success by Age Group**: 
+15. **Campaign Success by Age Group**: 
    - How does the success of marketing campaigns vary by age group?
 
-5. **Customer Complaints**: 
+16. **Customer Complaints**: 
    - What is the proportion of customers who have made complaints?
 
